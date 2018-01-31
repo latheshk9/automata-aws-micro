@@ -10,7 +10,10 @@ import (
 var HelloMessage string
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World")
+	HelloMessage := "Hello World"
+    out, _ := exec.Command("bash", "-c", "hostname").Output()
+    HelloMessage = HelloMessage + ": " + string(out)
+    fmt.Fprintf(w, HelloMessage)
 }
 
 func main() {
