@@ -1,45 +1,63 @@
+// Example - demonstrates REST API server implementation tests.
 package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-	"os/exec"
 )
 
-var HelloMessage string
+func getVersion(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		fail(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	data := struct {
+		Greet string `json:"greet"`
+	}{Greet: "Hello World"}
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	HelloMessage := "Hello World New-2"
-    out, _ := exec.Command("bash", "-c", "hostname").Output()
-    HelloMessage = HelloMessage + ": " + string(out)
-    fmt.Fprintf(w, HelloMessage)
+	ok(w, data)
 }
 
 func main() {
-	//Configuration()
-	http.HandleFunc("/", helloWorld)
-	http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/", getVersion)
+	http.HandleFunc("/hello", helloWorld)
+	http.ListenAndServe(":4444", nil)
 }
 
-type Config struct {
-	Message string `json:"message"`
+func helloWorld(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "hello world 1")
 }
 
-func Configuration() {
-	file, err := os.Open("properties.json")
+// fail writes a json response with error msg and status header
+func fail(w http.ResponseWriter, msg string, status int) {
+	w.Header().Set("Content-Type", "application/json")
+
+	data := struct {
+		Error string `json:"error"`
+	}{Error: msg}
+
+	resp, _ := json.Marshal(data)
+	w.WriteHeader(status)
+
+	fmt.Fprintf(w, string(resp))
+}
+
+// ok writes data to response with 200 status
+func ok(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if s, ok := data.(string); ok {
+		fmt.Fprintf(w, s)
+		return
+	}
+
+	resp, err := json.Marshal(data)
 	if err != nil {
-		fmt.Println("file error:", err)
-		os.Exit(1)
+		w.WriteHeader(http.StatusInternalServerError)
+		fail(w, "oops something evil has happened", 500)
+		return
 	}
-	decoder := json.NewDecoder(file)
-	configuration := Config{}
 
-	erro := decoder.Decode(&configuration)
-	if erro != nil {
-		fmt.Println("error:", err)
-		os.Exit(1)
-	}
-	HelloMessage = configuration.Message
+	fmt.Fprintf(w, string(resp))
 }
