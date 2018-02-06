@@ -26,7 +26,7 @@ func main() {
 }
 
 func getHello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World")
+	fmt.Fprintf(w, "Hello Hudson Bay!")
 }
 
 // fail writes a json response with error msg and status header
