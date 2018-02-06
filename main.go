@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func getVersion(w http.ResponseWriter, r *http.Request) {
+func helloWorld(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		fail(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
