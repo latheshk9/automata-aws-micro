@@ -20,13 +20,13 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", getVersion)
+	http.HandleFunc("/", getHello)
 	http.HandleFunc("/hello", helloWorld)
 	http.ListenAndServe(":4444", nil)
 }
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello world 1")
+func getHello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello World")
 }
 
 // fail writes a json response with error msg and status header
