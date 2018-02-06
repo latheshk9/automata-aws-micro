@@ -14,7 +14,7 @@ func getVersion(w http.ResponseWriter, r *http.Request) {
 	}
 	data := struct {
 		Greet string `json:"greet"`
-	}{Greet: "Hello World"}
+	}{Greet: "Hello World 1"}
 
 	ok(w, data)
 }
